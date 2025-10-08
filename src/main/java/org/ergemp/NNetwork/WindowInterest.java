@@ -83,7 +83,9 @@ public class WindowInterest {
             }
         }
         catch (Exception ex) {
-            throw (ex);
+            System.out.println("Exception in WindowInterest.initialize: ");
+            System.out.println(ex.getMessage());
+            ex.printStackTrace();
         }
         finally{
         }
@@ -290,6 +292,8 @@ public class WindowInterest {
             this.setCols(newCols);
         }
         catch (Exception ex) {
+            System.out.println("Exception in WindowInterest.verify: ");
+            System.out.println(ex.getMessage());
             ex.printStackTrace();
         }
         finally{

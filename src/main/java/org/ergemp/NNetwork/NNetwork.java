@@ -1,5 +1,6 @@
 package org.ergemp.NNetwork;
 
+import java.sql.Array;
 import java.util.*;
 
 public class NNetwork {
@@ -10,7 +11,18 @@ public class NNetwork {
     private Integer rowSize;
     private Integer colSize;
 
+    private Integer retRow = 0;
+    private Integer retCol = 0;
+
     private Map<String, List<List<Double>>> filterResults;
+
+    public void setIteration(Integer gIteration) {
+        this.iteration = gIteration;
+    }
+
+    public Integer getIteration() {
+        return this.iteration;
+    }
 
     public NNetwork(){
         data = null;
@@ -25,32 +37,42 @@ public class NNetwork {
         data = gData;
     }
 
-    public void setWindowInterest(WindowInterest gWindowInterest) throws Exception {
-        if (data == null) {
-            throw new Exception("NNetwork.setWindowInterest(): set data first.");
+    public void setWindowInterest(WindowInterest gWindowInterest) {
+        try {
+            if (data == null) {
+                throw new Exception("NNetwork.setWindowInterest(): set data first.");
+            } else {
+                windowInterest = gWindowInterest;
+            }
         }
-        else {
-            windowInterest = gWindowInterest;
+        catch (Exception ex) {
+            System.out.println("Exception in WindowInterest.setWindowInterest: ");
+            System.out.println(ex.getMessage());
+            ex.printStackTrace();
         }
     }
 
-    public void setKernel(Kernel gKernel) throws Exception {
-        if (data == null) {
-            throw new Exception("NNetwork.setKernel(): set data first.");
-        }
-        else if (windowInterest == null){
-            throw new Exception("NNetwork.setKernel(): set windowInterest first.");
-        }
-        else if (windowInterest.getItems().size() != gKernel.getSize() * gKernel.getSize() ) {
-            String msg = "";
+    public void setKernel(Kernel gKernel) {
+        try {
+            if (data == null) {
+                throw new Exception("NNetwork.setKernel(): set data first.");
+            } else if (windowInterest == null) {
+                throw new Exception("NNetwork.setKernel(): set windowInterest first.");
+            } else if (windowInterest.getItems().size() != gKernel.getSize() * gKernel.getSize()) {
+                String msg = "";
 
-            msg = "NNetwork.setKernel(): kernel size does not match with window size. \n" ;
-            msg += "NNetwork.setKernel(): window size: " + windowInterest.getItems().size() + " doesnt match kernel size: " + gKernel.getSize() ;
+                msg = "NNetwork.setKernel(): kernel size does not match with window size. \n";
+                msg += "NNetwork.setKernel(): window size: " + windowInterest.getItems().size() + " doesnt match kernel size: " + gKernel.getSize();
 
-            throw new Exception(msg);
+                throw new Exception(msg);
+            } else {
+                kernel = gKernel;
+            }
         }
-        else {
-            kernel = gKernel;
+        catch (Exception ex) {
+            System.out.println("Exception in Kernel.setKernel: ");
+            System.out.println(ex.getMessage());
+            ex.printStackTrace();
         }
     }
 
@@ -87,7 +109,9 @@ public class NNetwork {
                     rawArray[item.getRow() % rowSize][item.getCol() % colSize] = data.get(item.getRow()).get(item.getCol());
                 }
                 catch(Exception ex){
-                    //ex.printStackTrace();
+                    System.out.println("Exception in NNetwork.getDataItems:");
+                    System.out.println(ex.getMessage());
+                    ex.printStackTrace();
                 }
             }
         }
@@ -111,11 +135,16 @@ public class NNetwork {
     public void iterateWindowInterest() {
         // iteration conditions
         if (!windowInterest.isColsNull() && !windowInterest.isRowsNull()) {
-            //gWindowInterest.iterateColsOnly(gWindowInterest.getWindowSize());
+            // if both columns and rows has enough unprocessed data
+            // iterate columns only
             windowInterest.iterateColsOnly(iteration);
+            retCol++;
         } else if (windowInterest.isColsNull() && !windowInterest.isRowsNull()) {
-            //gWindowInterest.iterateRowsResetCols(gWindowInterest.getWindowSize());
+            // if column data is finished processing but there are enough data on the rows
+            // iterate rows and reset columns to the beginning of the matrix
             windowInterest.iterateRowsResetCols(iteration);
+            retCol = 0;
+            retRow++;
         }
 
         // correction on the window of interest according to the incoming matrix
@@ -124,13 +153,26 @@ public class NNetwork {
 
         // exit conditions
         if (windowInterest.isRowsNull()) {
+            // if we are at the end of the rows after the iteration
+            // return null and exit the procedure
             windowInterest.setNullRowsAndCols();
             return ;
         }
 
         if (windowInterest.isColsNull()) {
+            // if the cols are null after the iteration
+            // search for the row iteration
             windowInterest.iterateRowsResetCols(iteration);
+            retCol=0;
+            retRow++;
+
+            // correction on the window of interest according to the incoming matrix
+            // out of the boundaries will be set as null values
             windowInterest.verify(data.size(), data.get(0).size());
+
+            // second verification of the null rows
+            // if there is no data left on the rows after the iteration
+            // return null end exit the procedure
             if (windowInterest.isRowsNull()) {
                 windowInterest.setNullRowsAndCols();
                 return;
@@ -149,10 +191,10 @@ public class NNetwork {
         return retVal;
     }
 
-    public void applyKernel(){
+    public List<List<Double>> applyKernel(){
 
         List<List<Double>> retVal = new ArrayList<>();
-
+        List<Double> subList = new ArrayList<>();
 
         while(!isWindowInterestEnded()){
 
@@ -164,90 +206,17 @@ public class NNetwork {
                     tt += dataItems.get(i).get(j) * kernel.getKernel().get(i).get(j);
                 }
             }
-            System.out.println(tt);
+
             iterateWindowInterest();
 
-        }
+            System.out.println(tt);
+            subList.add(tt);
 
-        // first verification to eliminate the out of bound window size
-        /*
-        windowInterest.verify(data.size(), data.get(0).size());
-
-        Integer retArrayRowSize = (int)Math.ceil((double)data.size()/(double)iteration);
-        Integer retArrayColSize = (int)Math.ceil((double)data.get(0).size()/(double)iteration);
-
-        Double[][] retArray = new Double[retArrayRowSize][retArrayColSize];
-
-        Integer retRow = 0;
-        Integer retCol = 0;
-
-        List<List<Double>> rawList = getDataItems();
-
-        Iterator rawIt = rawList.iterator();
-
-        Integer rowCount = 0 ;
-        Double sumKernel = 0.0;
-
-        while(rawIt.hasNext()) {
-            List<Double> rowData = (List<Double>)rawIt.next();
-
-            for(int i=0; i<rowData.size(); i++) {
-                Double tt = rowData.get(i) * kernel.getKernel().get(rowCount).get(i) ;
-                sumKernel += rowData.get(i) * kernel.getKernel().get(rowCount).get(i);
+            if (retCol == 0 && retRow != 0) {
+                retVal.add(subList);
+                subList = new ArrayList<>();
             }
-
-            rowCount ++;
         }
-        retArray[retRow][retCol] = sumKernel;
-        */
-
-    }
-
-    public static void main(String[] args) throws Exception{
-
-        List<Double> row1 = Arrays.asList(11.0,12.0,13.0,14.0,15.0,16.0);
-        List<Double> row2 = Arrays.asList(21.0,22.0,23.0,24.0,25.0,26.0);
-        List<Double> row3 = Arrays.asList(31.0,32.0,33.0,34.0,35.0,36.0);
-        List<Double> row4 = Arrays.asList(41.0,42.0,43.0,44.0,45.0,46.0);
-        List<Double> row5 = Arrays.asList(51.0,52.0,53.0,54.0,55.0,56.0);
-        List<Double> row6 = Arrays.asList(61.0,62.0,63.0,64.0,65.0,66.0);
-        List<Double> row7 = Arrays.asList(71.0,72.0,73.0,74.0,75.0,76.0);
-        //List<Double> row6 = Arrays.asList(61.0,62.0,63.0,64.0,65.0);
-
-        List<List <Double>> data = new ArrayList<>();
-
-        data.add(row1);
-        data.add(row2);
-        data.add(row3);
-        data.add(row4);
-        data.add(row5);
-        data.add(row6);
-        data.add(row7);
-
-        NNetwork nnetwork = new NNetwork();
-
-        WindowInterest windowInterest = new WindowInterest();
-        windowInterest.initialize(3);
-
-        List<List<Double>> kernelVals = new ArrayList<>();
-
-        kernelVals.add(Arrays.asList(0.0,0.0,0.0));
-        kernelVals.add(Arrays.asList(0.0,1.0,0.0));
-        kernelVals.add(Arrays.asList(0.0,0.0,0.0));
-
-        Kernel kernel = new Kernel(3);
-        kernel.setKernel(kernelVals);
-
-        nnetwork.setData(data);
-        nnetwork.setWindowInterest(windowInterest);
-        nnetwork.setKernel(kernel);
-
-        nnetwork.iteration=3;
-        nnetwork.adjustSize();
-
-        nnetwork.applyKernel();
-
-
-
+        return retVal;
     }
 }
