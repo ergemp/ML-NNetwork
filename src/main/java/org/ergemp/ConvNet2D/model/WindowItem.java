@@ -1,4 +1,4 @@
-package org.ergemp.NNetwork;
+package org.ergemp.ConvNet2D.model;
 
 public class WindowItem {
 

@@ -1,6 +1,9 @@
-package org.ergemp.NNetwork;
+package org.ergemp.ConvNet2D;
 
-import java.sql.Array;
+import org.ergemp.ConvNet2D.model.Kernel;
+import org.ergemp.ConvNet2D.model.WindowInterest;
+import org.ergemp.ConvNet2D.model.WindowItem;
+
 import java.util.*;
 
 public class NNetwork {
@@ -76,7 +79,15 @@ public class NNetwork {
         }
     }
 
-    public void adjustSize(){
+    public void adjustSize() {
+
+        //
+        // adjusting the row and column sizes of the  rawArray in getDataItems method
+        //
+        // if the data size is smaller than the window size
+        // then getDataItems should have a smaller arraySize than the window size
+        // else getDataItems procedure return null pointer exception
+        //
         if (data.size() < windowInterest.getWindowSize()) {
             rowSize = data.size();
         }
@@ -208,8 +219,6 @@ public class NNetwork {
             }
 
             iterateWindowInterest();
-
-            System.out.println(tt);
             subList.add(tt);
 
             if (retCol == 0 && retRow != 0) {

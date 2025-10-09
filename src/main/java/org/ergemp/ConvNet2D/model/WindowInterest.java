@@ -1,4 +1,4 @@
-package org.ergemp.NNetwork;
+package org.ergemp.ConvNet2D.model;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -12,6 +12,32 @@ public class WindowInterest {
     Integer windowSize = 0;
 
     public WindowInterest(){
+    }
+
+    public void initialize(Integer gWindowSize){
+
+        this.rows.clear();
+        this.cols.clear();
+
+        try {
+            this.windowSize = gWindowSize;
+            for (Integer rPointer=0; rPointer < gWindowSize; rPointer ++) {
+                this.rows.add(rPointer);
+
+                List<Integer> cols = new ArrayList<>();
+                for (Integer cPointer=0; cPointer < gWindowSize; cPointer ++) {
+                    cols.add(cPointer);
+                }
+                this.cols.add(rPointer, cols);
+            }
+        }
+        catch (Exception ex) {
+            System.out.println("Exception in ConvNet2D.WindowInterest.initialize: ");
+            System.out.println(ex.getMessage());
+            ex.printStackTrace();
+        }
+        finally{
+        }
     }
 
     public List<List<Integer>> getCols() {
@@ -34,17 +60,6 @@ public class WindowInterest {
         this.rows = rows;
     }
 
-    public void addCol(Integer row, Integer col) {
-        if (cols.size() <= row){
-            cols.add(new ArrayList<Integer>());
-        }
-        this.cols.get(row).add(col);
-    }
-
-    public void addRow(Integer row) {
-        this.rows.add(row);
-    }
-
     @Override
     public String toString() {
         return "WindowInterest{" +
@@ -61,34 +76,7 @@ public class WindowInterest {
                 retVal.add(new WindowItem(rows.get(i),cols.get(i).get(j)));
             }
         }
-
         return retVal;
-    }
-
-    public void initialize(Integer gWindowSize){
-
-        this.rows.clear();
-        this.cols.clear();
-
-        try {
-            this.windowSize = gWindowSize;
-            for (Integer rPointer=0; rPointer < gWindowSize; rPointer ++) {
-                this.rows.add(rPointer);
-
-                List<Integer> cols = new ArrayList<>();
-                for (Integer cPointer=0; cPointer < gWindowSize; cPointer ++) {
-                    cols.add(cPointer);
-                }
-                this.cols.add(rPointer, cols);
-            }
-        }
-        catch (Exception ex) {
-            System.out.println("Exception in WindowInterest.initialize: ");
-            System.out.println(ex.getMessage());
-            ex.printStackTrace();
-        }
-        finally{
-        }
     }
 
     public void setNullRowsAndCols() {
@@ -103,26 +91,24 @@ public class WindowInterest {
         }
     }
 
-    public void iterateBoth(Integer windowSize) {
+    public void iterateBoth(Integer gIteration) {
         for (Integer i=0; i<rows.size(); i++) {
-            this.rows.set(i, this.rows.get(i)+windowSize);
+            this.rows.set(i, this.rows.get(i));
 
             List<Integer> nCols = new ArrayList<>();
             for(Integer j=0; j<cols.get(i).size(); j++) {
-                nCols.add(cols.get(i).get(j)+windowSize);
+                nCols.add(cols.get(i).get(j)+gIteration);
             }
             this.cols.set(i, nCols);
         }
     }
 
-    public void iterateColsOnly(Integer windowSize) {
+    public void iterateColsOnly(Integer gIteration) {
         for (Integer i=0; i<rows.size(); i++) {
-            //this.rows.set(i, this.rows.get(i)+windowSize);
-
             List<Integer> nCols = new ArrayList<>();
             for(Integer j=0; j<cols.get(i).size(); j++) {
                 if (cols.get(i).get(j) != null) {
-                    nCols.add(cols.get(i).get(j) + windowSize);
+                    nCols.add(cols.get(i).get(j) + gIteration);
                 }
                 else {
                     nCols.add(null);
@@ -132,9 +118,9 @@ public class WindowInterest {
         }
     }
 
-    public void iterateRowsOnly(Integer windowSize) {
+    public void iterateRowsOnly(Integer gIteration) {
         for (Integer i=0; i<rows.size(); i++) {
-            this.rows.set(i, this.rows.get(i)+windowSize);
+            this.rows.set(i, this.rows.get(i)+gIteration);
 
             List<Integer> nCols = new ArrayList<>();
             for(Integer j=0; j<cols.get(i).size(); j++) {
@@ -143,11 +129,11 @@ public class WindowInterest {
             this.cols.set(i, nCols);
         }
     }
-    public void iterateRowsResetCols(Integer windowSize) {
+    public void iterateRowsResetCols(Integer gIteration) {
         for (Integer i=0; i<rows.size(); i++) {
 
             if (this.rows.get(i) != null) {
-                this.rows.set(i, this.rows.get(i) + windowSize);
+                this.rows.set(i, this.rows.get(i) + gIteration);
             }
             else {
                 this.rows.set(i, null);
@@ -158,14 +144,11 @@ public class WindowInterest {
                 nCols.add(j);
             }
             this.cols.set(i, nCols);
-
         }
     }
 
-    public void resetCols(Integer windowSize) {
+    public void resetCols() {
         for (Integer i=0; i<rows.size(); i++) {
-            //this.rows.set(i, this.rows.get(i)+windowSize);
-
             List<Integer> nCols = new ArrayList<>();
             for(Integer j=0; j<cols.get(i).size(); j++) {
                 nCols.add(j);
@@ -175,14 +158,14 @@ public class WindowInterest {
     }
 
 
-    public void iterateColsResetRows(Integer windowSize) {
+    public void iterateColsResetRows(Integer gIteration) {
         for (Integer i=0; i<this.windowSize; i++) {
             this.rows.set(i, i);
 
             List<Integer> nCols = new ArrayList<>();
             for(Integer j=0; j<cols.get(i).size(); j++) {
                 if (cols.get(i).get(j) != null) {
-                    nCols.add(cols.get(i).get(j) + windowSize);
+                    nCols.add(cols.get(i).get(j) + gIteration);
                 }
                 else {
                     nCols.add(null);
@@ -292,7 +275,7 @@ public class WindowInterest {
             this.setCols(newCols);
         }
         catch (Exception ex) {
-            System.out.println("Exception in WindowInterest.verify: ");
+            System.out.println("Exception in ConvNet2D.WindowInterest.verify: ");
             System.out.println(ex.getMessage());
             ex.printStackTrace();
         }
