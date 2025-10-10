@@ -142,4 +142,63 @@ public class NNetwork {
         finally {
         }
     }
+
+    public List<Double> applyAveragePooling() {
+
+        List<Double> retVal = new ArrayList<>();
+        try {
+            while(!windowInterest.isItemsNull()) {
+
+                Double sum = 0.0;
+                Integer cnt = 0;
+                for (Integer i = 0; i < windowInterest.getItems().size(); i++) {
+                    if (windowInterest.getItems().get(i) != null) {
+                        sum += data.get(windowInterest.getItems().get(i));
+                        cnt ++;
+                    }
+                }
+                retVal.add(sum/cnt);
+
+                windowInterest.iterate(iteration);
+                windowInterest.verify(data.size());
+            }
+            return retVal;
+        }
+        catch (Exception ex){
+            throw(ex);
+        }
+        finally {
+        }
+    }
+
+    public List<Double> applyMaxPooling() {
+
+        List<Double> retVal = new ArrayList<>();
+        Double maxValue = 0.0;
+
+        try {
+            while(!windowInterest.isItemsNull()) {
+
+                Double sum = 0.0;
+                Integer cnt = 0;
+                for (Integer i = 0; i < windowInterest.getItems().size(); i++) {
+                    if (windowInterest.getItems().get(i) != null) {
+                        if (data.get(windowInterest.getItems().get(i)) > maxValue) {
+                         maxValue = data.get(windowInterest.getItems().get(i));
+                        }
+                    }
+                }
+                retVal.add(maxValue);
+
+                windowInterest.iterate(iteration);
+                windowInterest.verify(data.size());
+            }
+            return retVal;
+        }
+        catch (Exception ex){
+            throw(ex);
+        }
+        finally {
+        }
+    }
 }

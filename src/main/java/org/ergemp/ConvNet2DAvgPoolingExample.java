@@ -1,14 +1,14 @@
 package org.ergemp;
 
-import org.ergemp.ConvNet2D.model.Kernel;
 import org.ergemp.ConvNet2D.NNetwork;
+import org.ergemp.ConvNet2D.model.Kernel;
 import org.ergemp.ConvNet2D.model.WindowInterest;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class ConvNet2DExample {
+public class ConvNet2DAvgPoolingExample {
     public static void main(String[] args) {
 
         List<Double> row1 = Arrays.asList(11.0,12.0,13.0,14.0,15.0,16.0,17.0);
@@ -33,25 +33,14 @@ public class ConvNet2DExample {
         WindowInterest windowInterest = new WindowInterest();
         windowInterest.initialize(3);
 
-        // create kernel to be applied with the window interest
-        List<List<Double>> kernelVals = new ArrayList<>();
-
-        kernelVals.add(Arrays.asList(1.0,1.0,1.0));
-        kernelVals.add(Arrays.asList(1.0,1.0,1.0));
-        kernelVals.add(Arrays.asList(1.0,1.0,1.0));
-
-        Kernel kernel = new Kernel(3);
-        kernel.setKernel(kernelVals);
-
         NNetwork nnetwork = new NNetwork();
         nnetwork.setData(data);
         nnetwork.setWindowInterest(windowInterest);
-        nnetwork.setKernel(kernel);
 
         nnetwork.setIteration(3);
         nnetwork.adjustSize();
 
-        List<List<Double>> kernelApplied = nnetwork.applyKernel();
+        List<List<Double>> kernelApplied = nnetwork.applyAveragePooling();
         System.out.println(kernelApplied.toString());
     }
 }

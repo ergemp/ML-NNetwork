@@ -14,6 +14,8 @@ public class WindowInterest {
     public WindowInterest(){
     }
 
+    // initialize the windowInterest with the given window size
+    // window size should match the kernel size !
     public void initialize(Integer gWindowSize) {
         this.items.clear();
         this.windowSize = gWindowSize;
@@ -23,14 +25,20 @@ public class WindowInterest {
         }
     }
 
+    // get the interested items of the iterated window
     public List<Integer> getItems(){
         return items;
+    }
+
+    public void setWindowSize(Integer gWindowSize){
+        this.windowSize = gWindowSize;
     }
 
     public Integer getWindowSize(){
         return this.windowSize;
     }
 
+    // iterate the window for the next interested items
     public void iterate(Integer gIteration){
         List<Integer> nItems = new ArrayList<>();
         for(Integer j=0; j<items.size(); j++) {
@@ -41,6 +49,9 @@ public class WindowInterest {
         this.items = nItems;
     }
 
+    // verify the items
+    // if the item indexes are larger than the given data set
+    // set null values for the exceeding part of the window items
     public void verify(Integer gDataRowCount){
 
         List<Integer> nItems = new ArrayList<>();
@@ -56,6 +67,8 @@ public class WindowInterest {
         this.items = nItems;
     }
 
+    // check if all the items of the window is null
+    // means this is the end of the data
     public boolean isItemsNull() {
 
         Integer nullCount = 0;
@@ -72,6 +85,5 @@ public class WindowInterest {
         else {
             return false;
         }
-
     }
 }

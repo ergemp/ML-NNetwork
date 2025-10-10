@@ -108,43 +108,31 @@ public class NNetwork {
     }
 
     public List<List<Double>> getDataItems(){
-
-        double[][] rawArray = new double[rowSize][colSize];
-        List<List<Double>> rawList = new ArrayList<>();
+        List<List<Double>> retList = new ArrayList<>();
+        List<Double> subList = new ArrayList<>();
 
         Iterator it = windowInterest.getItems().iterator();
 
-        while (it.hasNext()) {
+        Integer tmpRow = 0;
 
-            rawList = new ArrayList<>();
+        while (it.hasNext()) {
             WindowItem item = (WindowItem) it.next();
 
+            if (tmpRow != item.getRow()) {
+                tmpRow = item.getRow();
+                retList.add(subList);
+                subList = new ArrayList<>();
+            }
+
             if (item.getRow() != null && item.getCol() != null) {
-                try {
-                    rawArray[item.getRow() % rowSize][item.getCol() % colSize] = data.get(item.getRow()).get(item.getCol());
-                }
-                catch(Exception ex){
-                    System.out.println("Exception in NNetwork.getDataItems:");
-                    System.out.println(ex.getMessage());
-                    ex.printStackTrace();
-                }
+                subList.add(data.get(item.getRow()).get(item.getCol()));
             }
         }
 
-        for (Integer i=0; i<rawArray.length; i++) {
-            List<Double> ttRaw = new ArrayList<>();
-
-            for (Integer j = 0; j < rawArray.length; j++) {
-                try {
-                    ttRaw.add(rawArray[i][j]);
-                }
-                catch(Exception ex){
-                }
-            }
-            rawList.add(ttRaw);
+        if (subList.size() !=0) {
+            retList.add(subList);
         }
-
-        return rawList;
+        return retList;
     }
 
     public void iterateWindowInterest() {
@@ -202,7 +190,6 @@ public class NNetwork {
         if (windowInterest.isRowsNull() && windowInterest.isColsNull()) {
             retVal = true;
         }
-
         return retVal;
     }
 
@@ -210,6 +197,11 @@ public class NNetwork {
 
         List<List<Double>> retVal = new ArrayList<>();
         List<Double> subList = new ArrayList<>();
+
+        // verify windowInterest with the data size
+        // verification is done for each iteration
+        // but the starting point may also need a verification
+        windowInterest.verify(data.size(), data.get(0).size());
 
         while(!isWindowInterestEnded()){
 
@@ -232,4 +224,75 @@ public class NNetwork {
         }
         return retVal;
     }
+
+    public List<List<Double>> applyAveragePooling(){
+
+        List<List<Double>> retVal = new ArrayList<>();
+        List<Double> subList = new ArrayList<>();
+
+        // verify windowInterest with the data size
+        // verification is done for each iteration
+        // but the starting point may also need a verification
+        windowInterest.verify(data.size(), data.get(0).size());
+
+        while(!isWindowInterestEnded()){
+
+            Double tt = 0.0;
+            Integer cnt = 0;
+            List<List<Double>> dataItems = getDataItems();
+
+            for(Integer i=0; i<dataItems.size(); i++) {
+                for (Integer j=0; j<dataItems.get(i).size(); j++) {
+                    tt += dataItems.get(i).get(j) ;
+                    cnt ++;
+                }
+            }
+
+            iterateWindowInterest();
+            subList.add(tt/cnt);
+
+            if (retCol == 0 && retRow != 0) {
+                retVal.add(subList);
+                subList = new ArrayList<>();
+            }
+
+        }
+        return retVal;
+    }
+
+    public List<List<Double>> applyMaxPooling(){
+
+        List<List<Double>> retVal = new ArrayList<>();
+        List<Double> subList = new ArrayList<>();
+
+        // verify windowInterest with the data size
+        // verification is done for each iteration
+        // but the starting point may also need a verification
+        windowInterest.verify(data.size(), data.get(0).size());
+
+        while(!isWindowInterestEnded()){
+
+            Double maxValue = 0.0;
+            List<List<Double>> dataItems = getDataItems();
+
+            for(Integer i=0; i<dataItems.size(); i++) {
+                for (Integer j=0; j<dataItems.get(i).size(); j++) {
+                    if (dataItems.get(i).get(j) > maxValue) {
+                        maxValue = dataItems.get(i).get(j);
+                    }
+                }
+            }
+
+            iterateWindowInterest();
+            subList.add(maxValue);
+
+            if (retCol == 0 && retRow != 0) {
+                retVal.add(subList);
+                subList = new ArrayList<>();
+            }
+
+        }
+        return retVal;
+    }
+
 }
