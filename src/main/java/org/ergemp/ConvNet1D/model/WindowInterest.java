@@ -5,6 +5,9 @@ import java.util.List;
 
 public class WindowInterest {
 
+    // indexes of the next iteration
+    // every iteration alters the items
+    // for the next set of items within the data
     List<Integer> items = new ArrayList<>();
     Integer windowSize = 0;
 
@@ -31,7 +34,9 @@ public class WindowInterest {
     public void iterate(Integer gIteration){
         List<Integer> nItems = new ArrayList<>();
         for(Integer j=0; j<items.size(); j++) {
-            nItems.add(items.get(j) + gIteration);
+            if (items.get(j) != null) {
+                nItems.add(items.get(j) + gIteration);
+            }
         }
         this.items = nItems;
     }
@@ -53,15 +58,20 @@ public class WindowInterest {
 
     public boolean isItemsNull() {
 
-        if (this.items == null) {
-            return true;
-        }
+        Integer nullCount = 0;
 
-        for (Object o : this.items) {
-            if (o == null) {
-                return true;
+        for(Object o: this.getItems()) {
+            if(o == null){
+                //return true;
+                nullCount ++;
             }
         }
-        return false;
+        if (nullCount == this.getItems().size() ){
+            return true;
+        }
+        else {
+            return false;
+        }
+
     }
 }

@@ -11,9 +11,13 @@ public class NNetwork {
     private WindowInterest windowInterest;
     private Kernel kernel;
     private Integer iteration;
+
+    // row and col size of the data (matrix)
     private Integer rowSize;
     private Integer colSize;
 
+    // control variables of the returning data
+    // after applying kernel
     private Integer retRow = 0;
     private Integer retCol = 0;
 

@@ -107,7 +107,6 @@ public class NNetwork {
                 break;
             }
         }
-
         return retVal;
     }
 
@@ -116,14 +115,13 @@ public class NNetwork {
         List<Double> retVal = new ArrayList<>();
 
         try {
-
             if (windowInterest.getItems().size() != kernel.getSize()) {
-                System.out.println("com.lobsync.convNet1D.function.apply() :  kernel size doesnt match with window size."  );
-                System.out.println("com.lobsync.convNet1D.function.apply() :  window size: " + windowInterest.getItems().size() + " doesnt match kernel size: " + kernel.getSize());
+                System.out.println("convNet1D.NNetwork.applyKernel() :  kernel size doesnt match with window size."  );
+                System.out.println("convNet1D.NNetwork.applyKernel() :  window size: " + windowInterest.getItems().size() + " doesnt match kernel size: " + kernel.getSize());
                 return null;
             }
 
-            for (Integer j=0; j < data.size(); j++) {
+            while(!windowInterest.isItemsNull()) {
 
                 Double sum = 0.0;
                 for (Integer i = 0; i < windowInterest.getItems().size(); i++) {
@@ -135,17 +133,13 @@ public class NNetwork {
 
                 windowInterest.iterate(iteration);
                 windowInterest.verify(data.size());
-
-                if (windowInterest.isItemsNull()) {
-                    return retVal;
-                }
             }
+            return retVal;
         }
         catch (Exception ex){
             throw(ex);
         }
         finally {
-            return retVal;
         }
     }
 }
