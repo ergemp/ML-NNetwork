@@ -3,6 +3,7 @@ package org.ergemp.ConvNet1D;
 import org.ergemp.ConvNet1D.model.Kernel;
 import org.ergemp.ConvNet1D.model.WindowInterest;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -112,6 +113,7 @@ public class NNetwork {
 
     public List<Double> applyKernel() {
 
+        DecimalFormat df = new DecimalFormat("#######.00");
         List<Double> retVal = new ArrayList<>();
 
         try {
@@ -129,7 +131,7 @@ public class NNetwork {
                         sum += data.get(windowInterest.getItems().get(i)) * kernel.getKernel().get(i);
                     }
                 }
-                retVal.add(sum);
+                retVal.add(Double.parseDouble(df.format(sum)));
 
                 windowInterest.iterate(iteration);
                 windowInterest.verify(data.size());

@@ -2,6 +2,7 @@ package org.ergemp.ConvNet2D.examples;
 
 import org.ergemp.ConvNet2D.NNetwork;
 import org.ergemp.ConvNet2D.kernels.EmbossKernel;
+import org.ergemp.ConvNet2D.kernels.ReducerKernel;
 import org.ergemp.ConvNet2D.model.Kernel;
 import org.ergemp.ConvNet2D.model.WindowInterest;
 
@@ -34,7 +35,7 @@ public class ConvNet2DPredefinedKernelExample {
         WindowInterest windowInterest = new WindowInterest();
         windowInterest.initialize(3);
 
-        EmbossKernel kernel = new EmbossKernel();
+        ReducerKernel kernel = new ReducerKernel();
 
         NNetwork nnetwork = new NNetwork();
         nnetwork.setData(data);

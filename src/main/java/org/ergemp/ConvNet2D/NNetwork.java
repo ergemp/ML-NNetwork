@@ -4,6 +4,7 @@ import org.ergemp.ConvNet2D.model.Kernel;
 import org.ergemp.ConvNet2D.model.WindowInterest;
 import org.ergemp.ConvNet2D.model.WindowItem;
 
+import java.text.DecimalFormat;
 import java.util.*;
 
 public class NNetwork {
@@ -195,6 +196,7 @@ public class NNetwork {
 
     public List<List<Double>> applyKernel(){
 
+        DecimalFormat df = new DecimalFormat("#######.00");
         List<List<Double>> retVal = new ArrayList<>();
         List<Double> subList = new ArrayList<>();
 
@@ -215,7 +217,8 @@ public class NNetwork {
             }
 
             iterateWindowInterest();
-            subList.add(tt);
+            subList.add(Double.parseDouble(df.format(tt)));
+            //subList.add(tt);
 
             if (retCol == 0 && retRow != 0) {
                 retVal.add(subList);
