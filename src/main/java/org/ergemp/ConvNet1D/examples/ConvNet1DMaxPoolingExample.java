@@ -1,4 +1,4 @@
-package org.ergemp;
+package org.ergemp.ConvNet1D.examples;
 
 import org.ergemp.ConvNet1D.NNetwork;
 import org.ergemp.ConvNet1D.model.WindowInterest;

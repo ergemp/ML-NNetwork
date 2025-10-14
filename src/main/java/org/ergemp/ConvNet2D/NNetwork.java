@@ -295,4 +295,43 @@ public class NNetwork {
         return retVal;
     }
 
+    public List<List<Double>> applyMinPooling(){
+
+        List<List<Double>> retVal = new ArrayList<>();
+        List<Double> subList = new ArrayList<>();
+
+        // verify windowInterest with the data size
+        // verification is done for each iteration
+        // but the starting point may also need a verification
+        windowInterest.verify(data.size(), data.get(0).size());
+
+        while(!isWindowInterestEnded()){
+
+            Double minValue = null;
+            List<List<Double>> dataItems = getDataItems();
+
+            for(Integer i=0; i<dataItems.size(); i++) {
+                for (Integer j=0; j<dataItems.get(i).size(); j++) {
+
+                    if (minValue == null) {
+                        minValue = dataItems.get(i).get(j);
+                    }
+                    else if (dataItems.get(i).get(j) < minValue) {
+                        minValue = dataItems.get(i).get(j);
+                    }
+                }
+            }
+
+            iterateWindowInterest();
+            subList.add(minValue);
+
+            if (retCol == 0 && retRow != 0) {
+                retVal.add(subList);
+                subList = new ArrayList<>();
+            }
+
+        }
+        return retVal;
+    }
+
 }
