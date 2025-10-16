@@ -48,7 +48,7 @@ public class NNetwork {
     public void setWindowInterest(WindowInterest gWindowInterest) {
         try {
             if (data == null) {
-                throw new Exception("NNetwork.setWindowInterest(): set data first.");
+                throw new Exception("ConvNet2D.NNetwork.setWindowInterest(): set data first.");
             } else {
                 windowInterest = gWindowInterest;
             }
@@ -56,7 +56,8 @@ public class NNetwork {
         catch (Exception ex) {
             System.out.println("Exception in WindowInterest.setWindowInterest: ");
             System.out.println(ex.getMessage());
-            ex.printStackTrace();
+            System.exit(-1);
+            //ex.printStackTrace();
         }
     }
 
@@ -80,7 +81,8 @@ public class NNetwork {
         catch (Exception ex) {
             System.out.println("Exception in Kernel.setKernel: ");
             System.out.println(ex.getMessage());
-            ex.printStackTrace();
+            System.exit(-1);
+            //ex.printStackTrace();
         }
     }
 
@@ -112,9 +114,9 @@ public class NNetwork {
         List<List<Double>> retList = new ArrayList<>();
         List<Double> subList = new ArrayList<>();
 
-        Iterator it = windowInterest.getItems().iterator();
+        Integer tmpRow = windowInterest.getItems().get(0).getRow();
 
-        Integer tmpRow = 0;
+        Iterator it = windowInterest.getItems().iterator();
 
         while (it.hasNext()) {
             WindowItem item = (WindowItem) it.next();
@@ -124,6 +126,7 @@ public class NNetwork {
                 retList.add(subList);
                 subList = new ArrayList<>();
             }
+
 
             if (item.getRow() != null && item.getCol() != null) {
                 subList.add(data.get(item.getRow()).get(item.getCol()));
@@ -212,7 +215,13 @@ public class NNetwork {
 
             for(Integer i=0; i<dataItems.size(); i++) {
                 for (Integer j=0; j<dataItems.get(i).size(); j++) {
-                    tt += dataItems.get(i).get(j) * kernel.getKernel().get(i).get(j);
+                    try {
+                        tt += dataItems.get(i).get(j) * kernel.getKernel().get(i).get(j);
+                    }
+                    catch (Exception ex) {
+                        System.out.println("i:" + i + " j: " + j);
+                    }
+
                 }
             }
 

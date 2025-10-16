@@ -17,9 +17,9 @@ public class ConvNet2DPredefinedKernelExample {
         List<Double> row2 = Arrays.asList(21.0,22.0,23.0,24.0,25.0,26.0,27.0);
         List<Double> row3 = Arrays.asList(31.0,32.0,33.0,34.0,35.0,36.0,37.0);
         List<Double> row4 = Arrays.asList(41.0,42.0,43.0,44.0,45.0,46.0,47.0);
-        //List<Double> row5 = Arrays.asList(51.0,52.0,53.0,54.0,55.0,56.0,57.0);
-        //List<Double> row6 = Arrays.asList(61.0,62.0,63.0,64.0,65.0,66.0,67.0);
-        //List<Double> row7 = Arrays.asList(71.0,72.0,73.0,74.0,75.0,76.0,77.0);
+        List<Double> row5 = Arrays.asList(51.0,52.0,53.0,54.0,55.0,56.0,57.0);
+        List<Double> row6 = Arrays.asList(61.0,62.0,63.0,64.0,65.0,66.0,67.0);
+        List<Double> row7 = Arrays.asList(71.0,72.0,73.0,74.0,75.0,76.0,77.0);
 
         List<List <Double>> data = new ArrayList<>();
 
@@ -27,9 +27,9 @@ public class ConvNet2DPredefinedKernelExample {
         data.add(row2);
         data.add(row3);
         data.add(row4);
-        //data.add(row5);
-        //data.add(row6);
-        //data.add(row7);
+        data.add(row5);
+        data.add(row6);
+        data.add(row7);
 
         // create window interest
         WindowInterest windowInterest = new WindowInterest();
