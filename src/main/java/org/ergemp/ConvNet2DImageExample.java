@@ -1,8 +1,6 @@
 package org.ergemp;
 
 import org.ergemp.ConvNet2D.NNetwork;
-import org.ergemp.ConvNet2D.kernels.GaussianBlurKernel;
-import org.ergemp.ConvNet2D.kernels.ReducerKernel;
 import org.ergemp.ConvNet2D.model.Kernel;
 import org.ergemp.ConvNet2D.model.WindowInterest;
 import org.ergemp.util.Convert2DArrayToList;
@@ -10,7 +8,6 @@ import org.ergemp.util.Convert2DArrayToList;
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.awt.image.Raster;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -19,21 +16,23 @@ import java.util.List;
 
 public class ConvNet2DImageExample {
 
+    // enumaration for the color schemas
     enum color {red, green, blue, alpha, other}
 
     public static void main(String[] args) throws IOException {
 
-        //BufferedImage bufferedImage = ImageIO.read(new File("ImageFile.bmp"));
-        BufferedImage bufferedImage = ImageIO.read(new File("data/image/dog2.jpg"));
+        // read the image file with ImageIO
+        BufferedImage bufferedImage = ImageIO.read(new File("data/image/dog3.jpg"));
 
-        Raster rr = bufferedImage.getData();
-
+        // read the color matrices of the image to int arrays
         int pix[][] = getMatrixOfImage(bufferedImage, color.other);
         int redPix[][] = getMatrixOfImage(bufferedImage, color.red);
         int greenPix[][] = getMatrixOfImage(bufferedImage, color.green);
         int bluePix[][] = getMatrixOfImage(bufferedImage, color.blue);
         int alphaPix[][] = getMatrixOfImage(bufferedImage, color.alpha);
 
+        // convolution network works with java lists
+        // convert arrays to lists
         List<List<Double>> redPixList = Convert2DArrayToList.convert(redPix);
         List<List<Double>> greenPixList = Convert2DArrayToList.convert(greenPix);
         List<List<Double>> bluePixList = Convert2DArrayToList.convert(bluePix);
@@ -42,21 +41,40 @@ public class ConvNet2DImageExample {
         WindowInterest windowInterest = new WindowInterest();
         windowInterest.initialize(3);
 
+        // create kernel
         Kernel kernel = new Kernel(3);
         List<List<Double>> kernelVals = new ArrayList<>();
+        /*
         kernelVals.add(Arrays.asList(0.11,0.11,0.11));
         kernelVals.add(Arrays.asList(0.11,0.11,0.11));
         kernelVals.add(Arrays.asList(0.11,0.11,0.11));
+        */
+
+        /*
+        kernelVals.add(Arrays.asList(1.0, 0.0, -1.0));
+        kernelVals.add(Arrays.asList(2.0, 0.0, -2.0));
+        kernelVals.add(Arrays.asList(1.0, 0.0, -1.0));
+        */
+
+        kernelVals.add(Arrays.asList(-0.25, 0.0, 0.25));
+        kernelVals.add(Arrays.asList(0.0, 0.0, 0.0));
+        kernelVals.add(Arrays.asList(0.25, 0.0, -0.25));
+
         kernel.setKernel(kernelVals);
 
+        // create neural network
+        // and set the data, window and kernel of the network
         NNetwork nnetwork = new NNetwork();
         nnetwork.setData(redPixList);
         nnetwork.setWindowInterest(windowInterest);
         nnetwork.setKernel(kernel);
 
+        // set the iteration of the window
         nnetwork.setIteration(1);
         nnetwork.adjustSize();
 
+        // applying the kernel (filter) on each of the color codes
+        // red, green and blue
         windowInterest.initialize(3);
         List<List<Double>> kernelAppliedRed = nnetwork.applyKernel();
 
@@ -68,41 +86,37 @@ public class ConvNet2DImageExample {
         windowInterest.initialize(3);
         List<List<Double>> kernelAppliedBlue = nnetwork.applyKernel();
 
+        // create a buffered image
+        BufferedImage img = new BufferedImage(bufferedImage.getWidth(),
+                                                bufferedImage.getHeight(),
+                                                BufferedImage.TYPE_INT_ARGB);
 
-        // Create a BufferedImage and obtain the Graphics object
-        BufferedImage img = new BufferedImage(bufferedImage.getWidth(), bufferedImage.getHeight(), BufferedImage.TYPE_INT_ARGB);
-
-        /*
-        *
-        *   Color myWhite = new Color(255, 255, 255); // Color white
-            int rgb = myWhite.getRGB();
-
-            try {
-                BufferedImage img = null;
+        // set the rgb of the created image
+        for (int i = 0; i < bufferedImage.getWidth(); i++) {
+            for (int j = 0; j < bufferedImage.getHeight(); j++) {
                 try {
-                    img = ImageIO.read(new File("bubbles.bmp"));
+                    Color color = new Color(kernelAppliedRed.get(i).get(j).intValue(),
+                                            kernelAppliedGreen.get(i).get(j).intValue(),
+                                            kernelAppliedBlue.get(i).get(j).intValue());
+                    img.setRGB(i, j, color.getRGB());
                 }
-                catch (IOException e) {
+                catch (Exception ex) {
                 }
-
-                for (int i = 0; i < 100; i++) {
-                    for (int j = 0; j < 100; j++) {
-                        img.setRGB(i, j, rgb);
-                    }
-                }
-
-                // retrieve image
-                File outputfile = new File("saved.png");
-                ImageIO.write(img, "png", outputfile);
             }
-            catch (IOException e) {
-            }
-        * */
+        }
+
+        // save the filtered image
+        File outputfile = new File("data/saved.png");
+        ImageIO.write(img, "png", outputfile);
 
         System.out.println("end");
     }
 
     public static int[][] getMatrixOfImage(BufferedImage bufferedImage, color gColor) {
+
+        //
+        // return the color values of the image
+        //
         int width = bufferedImage.getWidth(null);
         int height = bufferedImage.getHeight(null);
 

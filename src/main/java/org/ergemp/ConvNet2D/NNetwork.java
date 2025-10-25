@@ -22,8 +22,6 @@ public class NNetwork {
     private Integer retRow = 0;
     private Integer retCol = 0;
 
-    private Map<String, List<List<Double>>> filterResults;
-
     public void setIteration(Integer gIteration) {
         this.iteration = gIteration;
     }
@@ -36,8 +34,6 @@ public class NNetwork {
         data = null;
         windowInterest = null;
         kernel = null;
-
-        filterResults = new HashMap<>();
         iteration=1;
     }
 
@@ -89,7 +85,7 @@ public class NNetwork {
     public void adjustSize() {
 
         //
-        // adjusting the row and column sizes of the  rawArray in getDataItems method
+        // adjusting the row and column sizes of the rawArray in getDataItems method
         //
         // if the data size is smaller than the window size
         // then getDataItems should have a smaller arraySize than the window size
@@ -111,31 +107,44 @@ public class NNetwork {
     }
 
     public List<List<Double>> getDataItems(){
+
+        // return the corresponding data of the windowInterest
+        // which is extracted from the original matrix (this.data)
         List<List<Double>> retList = new ArrayList<>();
         List<Double> subList = new ArrayList<>();
 
+        // control parameter for:
+        // checks if the row is iterated
         Integer tmpRow = windowInterest.getItems().get(0).getRow();
 
+        // iterate the windowInterest (matrix)
         Iterator it = windowInterest.getItems().iterator();
 
         while (it.hasNext()) {
             WindowItem item = (WindowItem) it.next();
 
+            // if row changed
+            // add the temporary subList to the return value
             if (tmpRow != item.getRow()) {
                 tmpRow = item.getRow();
                 retList.add(subList);
                 subList = new ArrayList<>();
             }
 
-
+            // if row and column values are not null
+            // get the corresponding data and add the subList
             if (item.getRow() != null && item.getCol() != null) {
                 subList.add(data.get(item.getRow()).get(item.getCol()));
             }
         }
 
-        if (subList.size() !=0) {
+        // if there is any data left over after the loop
+        // add the leftover to return value
+        if (subList.size() != 0) {
             retList.add(subList);
         }
+
+        // return the return value
         return retList;
     }
 
@@ -189,6 +198,8 @@ public class NNetwork {
 
     public Boolean isWindowInterestEnded(){
 
+        // checks if the windowInterest comes to the end
+        // which means there is no more rows or columns left (unscanned) on the data (matrix)
         Boolean retVal = false;
 
         if (windowInterest.isRowsNull() && windowInterest.isColsNull()) {
@@ -221,7 +232,6 @@ public class NNetwork {
                     catch (Exception ex) {
                         System.out.println("i:" + i + " j: " + j);
                     }
-
                 }
             }
 
@@ -341,9 +351,7 @@ public class NNetwork {
                 retVal.add(subList);
                 subList = new ArrayList<>();
             }
-
         }
         return retVal;
     }
-
 }
