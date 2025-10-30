@@ -19,8 +19,8 @@ public class Kernel {
     public void setKernel(List<List<Double>> gKernel) {
 
         if (gKernel.size() != this.size) {
-            System.out.println(this.getClass().getName() + ".setKernel() :  kernel size doesnt match with the kernel elements."  );
-            System.out.println(this.getClass().getName() + ".setKernel() :  " + this.getSize() + " doesnt match " + gKernel.toString());
+            System.out.println(this.getClass().getName() + ".setKernel() :  kernel size does not match with the kernel elements."  );
+            System.out.println(this.getClass().getName() + ".setKernel() :  " + this.getSize() + " does not match " + gKernel.toString());
         }
         else {
             this.kernel = gKernel;
