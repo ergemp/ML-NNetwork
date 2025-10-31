@@ -64,6 +64,50 @@ The following examples are the complete implementations for a custom kernel appl
 
 [ConvNet1D Custom Kernel Example](https://github.com/ergemp/ML-NNetwork/blob/main/src/main/java/org/ergemp/ConvNet1D/examples/ConvNet1DKernelExample.java)
 
+## Pooling
+
+Reducing the size of the original matrix before or after the applied filter. ML-NNetwork supports Min, Max and Average Pooling options. To apply any of the pooling there is no need to create and initialize a kernel, but the windowInterest should be initiated. Default pool sizes are 3x3 for 2D Convolution and 3 for 1D Convolution. 
+
+The sample code for a 1D and 2D ConvNet can be found as follows. 
+
+### 2D ConvNet Max pooling Example
+```declarative
+        // create window interest
+        WindowInterest windowInterest = new WindowInterest();
+        windowInterest.initialize(3);
+
+        NNetwork nnetwork = new NNetwork();
+        nnetwork.setData(data);
+        nnetwork.setWindowInterest(windowInterest);
+
+        nnetwork.setIteration(3);
+        nnetwork.adjustSize();
+
+        List<List<Double>> kernelApplied = nnetwork.applyMaxPooling();
+        System.out.println(kernelApplied.toString());
+```
+[Complete Max Pooling Example for 2D](https://github.com/ergemp/ML-NNetwork/blob/main/src/main/java/org/ergemp/ConvNet2D/examples/ConvNet2DMaxPoolingExample.java)
+
+
+### 1D ConvNet Max pooling Example
+```declarative
+        // create window interest
+        WindowInterest windowInterest = new WindowInterest();
+        windowInterest.initialize(3);
+
+        NNetwork nnetwork = new NNetwork();
+        nnetwork.setData(data);
+        nnetwork.setWindowInterest(windowInterest);
+
+        nnetwork.setIteration(1);
+        nnetwork.adjustSize();
+
+        List<Double> poolApplied = nnetwork.applyMaxPooling();
+        System.out.println(poolApplied.toString());
+```
+[Complete Max Pooling Example for 1D](https://github.com/ergemp/ML-NNetwork/blob/main/src/main/java/org/ergemp/ConvNet1D/examples/ConvNet1DMaxPoolingExample.java)
+
+
 ## Filtering an image with ML-NNetwork
 
 ### Reading an image to array
