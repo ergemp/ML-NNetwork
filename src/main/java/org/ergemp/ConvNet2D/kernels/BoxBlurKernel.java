@@ -6,17 +6,22 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class EdgeDetectionKernel {
+public class BoxBlurKernel {
     private Kernel kernel;
 
-    public EdgeDetectionKernel(){
+    public BoxBlurKernel(){
         List<List<Double>> kernelVals = new ArrayList<>();
 
-        // https://en.wikipedia.org/wiki/Edge_detection
+        // https://en.wikipedia.org/wiki/Kernel_(image_processing)
+        /*
+            1   1   1
+        1/9 1   1   1
+            1   1   1
+        */
 
-        kernelVals.add(Arrays.asList(-1.0,-1.0,-1.0));
-        kernelVals.add(Arrays.asList(-1.0,8.0,-1.0));
-        kernelVals.add(Arrays.asList(-1.0,-1.0,-1.0));
+        kernelVals.add(Arrays.asList(0.11,0.11,0.11));
+        kernelVals.add(Arrays.asList(0.11,0.11,0.11));
+        kernelVals.add(Arrays.asList(0.11,0.11,0.11));
 
         this.kernel = new Kernel(3);
         kernel.setKernel(kernelVals);

@@ -6,17 +6,22 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class EdgeDetectionKernel {
+public class SharpenKernel {
     private Kernel kernel;
 
-    public EdgeDetectionKernel(){
+    public SharpenKernel(){
         List<List<Double>> kernelVals = new ArrayList<>();
 
-        // https://en.wikipedia.org/wiki/Edge_detection
+        // https://en.wikipedia.org/wiki/Kernel_(image_processing)
+        /*
+            0   -1   0
+            -1   5   -1
+            0    1   0
+        */
 
-        kernelVals.add(Arrays.asList(-1.0,-1.0,-1.0));
-        kernelVals.add(Arrays.asList(-1.0,8.0,-1.0));
-        kernelVals.add(Arrays.asList(-1.0,-1.0,-1.0));
+        kernelVals.add(Arrays.asList(0.0,-1.0,0.0));
+        kernelVals.add(Arrays.asList(-1.0,5.0,-1.0));
+        kernelVals.add(Arrays.asList(0.0,-1.0,0.0));
 
         this.kernel = new Kernel(3);
         kernel.setKernel(kernelVals);
